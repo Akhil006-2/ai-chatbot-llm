@@ -28,9 +28,14 @@ if send_btn and user_input.strip():
                     if not chunk or chunk == "[DONE]":
                         continue
 
-                    # Treat chunk as plain text, not JSON
-                    bot_reply += chunk
-                    placeholder.markdown(f"🤖 **AI:** {bot_reply}▌")
+                    try:
+                        data = json.loads(chunk)
+                        content = data.get("choices", [{}])[0].get("delta", {}).get("content", "")
+                        bot_reply += content
+                        placeholder.markdown(f"🤖 **AI:** {bot_reply}▌")
+                    except Exception as e:
+                        st.error(f"Failed to parse: {e}")
+
 
         except Exception as e:
             bot_reply = f"⚠️ Error: {e}"
